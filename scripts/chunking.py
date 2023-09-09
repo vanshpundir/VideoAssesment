@@ -1,3 +1,9 @@
+import speech_recognition as sr
+from pydub import AudioSegment
+from pydub.silence import split_on_silence
+
+
+import os
 r = sr.Recognizer()
 
 def transcribe_large_audio(path):
@@ -36,7 +42,7 @@ def transcribe_large_audio(path):
     # Return text for all chunks
     return whole_text
 
-result = transcribe_large_audio('soundfile.wav')
+if __name__ == "__main__":
+    result = transcribe_large_audio('/Users/vansh/Desktop/VideoAssesment/audio_files/1.wav')
 
-print(result)
-print(result, file=open('result.txt', 'w'))
+    print(result)

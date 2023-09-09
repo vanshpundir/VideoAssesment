@@ -1,16 +1,23 @@
-# This is a sample Python script.
+from pipeline.get_text_from_audio import audio_to_text
+from google.cloud import speech
+from pipeline.video_audio_conversion import get_audio
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import os
 
+for i in os.listdir("/Users/vansh/Desktop/VideoAssesment/video_files"):
+    get_audio(os.path.join("/Users/vansh/Desktop/VideoAssesment/video_files", i), i)
+    audio_path = f"/Users/vansh/Desktop/VideoAssesment/audio_files/{i}.wav"
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    # Define the recognition configuration outside the function
+    config = speech.RecognitionConfig(
+        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+        sample_rate_hertz=44100,  # Set to the correct sample rate of your audio
+        language_code="en-US",  # Replace with the desired language code
+    )
+    text_from_audio = audio_to_text(audio_path, config)
+    if text_from_audio:
+        with open (f"/Users/vansh/Desktop/VideoAssesment/audio_text/{i}.txt", 'w') as f:
+            f.write(text_from_audio)
+        print(text_from_audio)
+    else:
+        print("Transcription failed.")
