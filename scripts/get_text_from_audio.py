@@ -1,45 +1,41 @@
-import speech_recognition as sr
-import time
-# Function to convert audio to text using Google Web Speech API
-def google_speech_to_text(audio_path):
-    recognizer = sr.Recognizer()
-    with sr.AudioFile(audio_path) as source:
-        audio = recognizer.record(source)
-    try:
-        text = recognizer.recognize_google(audio)
-        return text
-    except sr.UnknownValueError:
-        return "Google Web Speech API could not understand audio"
-    except sr.RequestError as e:
-        return f"Could not request results from Google Web Speech API; {e}"
+from google.cloud import speech
+import io
+from pydub import AudioSegment
 
-# Function to convert audio to text using CMU Sphinx (offline)
-def sphinx_speech_to_text(audio_path):
-    recognizer = sr.Recognizer()
-    with sr.AudioFile(audio_path) as source:
-        audio = recognizer.record(source)
+# Initialize the Google Cloud client
+client = speech.SpeechClient()
+
+# Function to convert stereo audio to mono and then convert it to text
+def audio_to_text(audio_path):
     try:
-        text = recognizer.recognize_sphinx(audio)
-        return text
-    except sr.UnknownValueError:
-        return "CMU Sphinx could not understand audio"
-    except sr.RequestError as e:
-        return f"Could not request results from CMU Sphinx; {e}"
+        # Load the audio file and convert it to mono
+        audio = AudioSegment.from_wav(audio_path)
+        audio = audio.set_channels(1)
+
+        # Export the mono audio as raw WAV bytes
+        with io.BytesIO() as wav_buffer:
+            audio.export(wav_buffer, format="wav")
+            content = wav_buffer.getvalue()
+
+        audio = speech.RecognitionAudio(content=content)
+        config = speech.RecognitionConfig(
+            encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+            sample_rate_hertz=44100,  # Set to the correct sample rate of your audio
+            language_code="en-US",   # Replace with the desired language code
+        )
+
+        response = client.recognize(config=config, audio=audio)
+
+        for result in response.results:
+            print("Transcript: {}".format(result.alternatives[0].transcript))
+
+    except Exception as e:
+        print("An error occurred:", str(e))
 
 if __name__ == "__main__":
 
-    a = time.time()
-    # Replace 'audio_path' with the path to your audio file (in WAV format for Sphinx)
+
+    # Replace 'audio_path' with the path to your audio file (must be in WAV format)
     audio_path = "/Users/vansh/Desktop/VideoAssesment/audio_files/1.wav"
 
-    # Convert audio to text using Google Web Speech API
-    google_result = google_speech_to_text(audio_path)
-    print("Google Web Speech API Result:")
-    print(google_result)
-
-    # Convert audio to text using CMU Sphinx (offline)
-    sphinx_result = sphinx_speech_to_text(audio_path)
-    print("\nCMU Sphinx Result:")
-    print(sphinx_result)
-    b = time.time()
-    print("Execution took: ", b-a)
+    audio_to_text(audio_path)
