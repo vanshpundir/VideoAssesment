@@ -18,9 +18,9 @@ def download_video(url, save_path):
 
 if __name__ == "__main__":
     # Replace 'video_url' with the URL of the video you want to download
-    video_url = "https://www.youtube.com/watch?v=your_video_id_here"
+    video_url = "https://www.youtube.com/watch?v=gyFaBZ_BQhc"
 
     # Replace 'save_path' with the path where you want to save the downloaded video
-    save_path = "path_to_save_video"
+    save_path = "/Users/vansh/Desktop/VideoAssesment/video_files"
 
     download_video(video_url, save_path)
