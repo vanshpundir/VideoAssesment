@@ -18,7 +18,8 @@ def transcribe_large_audio(path):
     folder_name = "audio-chunks"
     if not os.path.isdir(folder_name):
         os.mkdir(folder_name)
-    
+
+
     whole_text = ""
     # Process each chunk
     for i, audio_chunk in enumerate(chunks, start=1):
