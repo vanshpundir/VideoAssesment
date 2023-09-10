@@ -26,6 +26,9 @@ Before running the code in this repository, make sure you have the following pre
 
    ```bash
    git clone https://github.com/yourusername/InterviewBot.git
+   mkdir video_files #put your video here
+   
+   
    ```
 
 2. Navigate to the repository directory:
