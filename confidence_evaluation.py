@@ -13,76 +13,76 @@ import time
 import os
 import matplotlib.pyplot as plt
 
-def detectemotion(imagefile, enforce_detection=False):
-    try:
-        img = cv2.imread(imagefile)
-        result = DeepFace.analyze(img, actions=['emotion'], enforce_detection=enforce_detection)
-        return result
-    except Exception as e:
-        print(f"Emotion detection failed: {str(e)}")
-        return None  # Return None if enforce detection is set to False
+def get_emotion(video_path):
+    def detectemotion(imagefile, enforce_detection=False):
+        try:
+            img = cv2.imread(imagefile)
+            result = DeepFace.analyze(img, actions=['emotion'], enforce_detection=enforce_detection)
+            return result
+        except Exception as e:
+            print(f"Emotion detection failed: {str(e)}")
+            return None  # Return None if enforce detection is set to False
 
-# video_path = r"./vid1.mp4"
-video_path = "W:\VideoCV Project\Confidence Evaluation\vid1.mp4"
-cap = cv2.VideoCapture(video_path)
+    # video_path = r"./vid1.mp4"
 
-results = []  # List to store emotion detection results
-frame_rate = 3  # 1 frame per second
-output_dir = 'frames'  # Directory to store temporary frame images
+    cap = cv2.VideoCapture(video_path)
 
-# Create the output directory if it doesn't exist
-os.makedirs(output_dir, exist_ok=True)
+    results = []  # List to store emotion detection results
+    frame_rate = 3  # 1 frame per second
+    output_dir = 'frames'  # Directory to store temporary frame images
 
-while True:
-    ret, frame = cap.read()
+    # Create the output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
 
-    if not ret:
-        break  # Break the loop when we reach the end of the video
+    while True:
+        ret, frame = cap.read()
 
-    # Get the current time
-    current_time = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000.0
+        if not ret:
+            break  # Break the loop when we reach the end of the video
 
-    # Detect emotion every 1 second
-    if current_time >= len(results) * frame_rate:
-        # Save the frame as an image file
-        frame_filename = os.path.join(output_dir, f"frame_{len(results)}.jpg")
-        cv2.imwrite(frame_filename, frame)
+        # Get the current time
+        current_time = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000.0
 
-        # Detect emotion on the saved frame
-        emotion_result = detectemotion(frame_filename)
-        results.append(emotion_result)
+        # Detect emotion every 1 second
+        if current_time >= len(results) * frame_rate:
+            # Save the frame as an image file
+            frame_filename = os.path.join(output_dir, f"frame_{len(results)}.jpg")
+            cv2.imwrite(frame_filename, frame)
 
-# Release the video capture object
-cap.release()
+            # Detect emotion on the saved frame
+            emotion_result = detectemotion(frame_filename)
+            results.append(emotion_result)
 
-# Print the emotion results for each second
-final_results = []
-for i, result in enumerate(results):
-    dict1 = result[0]['emotion']
-    # final_results.append((result[0]['emotion'][list(dict1.keys())[-1]], list((result[0]['emotion']).keys())[-1]))
-    final_results.append((list((result[0]['emotion']).keys())[-1]))
-    # print(f"Second {i+1}: {result[0]['emotion']}")
+    # Release the video capture object
+    cap.release()
 
-print(final_results)
+    # Print the emotion results for each second
+    final_results = []
+    for i, result in enumerate(results):
+        dict1 = result[0]['emotion']
+        # final_results.append((result[0]['emotion'][list(dict1.keys())[-1]], list((result[0]['emotion']).keys())[-1]))
+        final_results.append((list((result[0]['emotion']).keys())[-1]))
+        # print(f"Second {i+1}: {result[0]['emotion']}")
 
-from collections import Counter
 
-element_counts = Counter(final_results)
-max_count = max(element_counts.values())
-most_common_elements = [element for element, count in element_counts.items() if count == max_count]
+    from collections import Counter
 
-overall_emo = most_common_elements[0]
-score = (max_count / len(final_results)) * 100
+    element_counts = Counter(final_results)
+    max_count = max(element_counts.values())
+    most_common_elements = [element for element, count in element_counts.items() if count == max_count]
 
-# weights = {"fear": 1,"sad": 2.5, "disgust": 5, "angry": 5, "surprise": 5, "neutral": 8.3, "happy": 10}
-weights = {"fear": -10,"sad": -8, "disgust": -5, "angry": -5, "surprise": 2, "neutral": 8.3, "happy": 10}
+    overall_emo = most_common_elements[0]
+    score = (max_count / len(final_results)) * 100
 
-sum = 0
-max_score = 10*len(final_results)
+    # weights = {"fear": 1,"sad": 2.5, "disgust": 5, "angry": 5, "surprise": 5, "neutral": 8.3, "happy": 10}
+    weights = {"fear": -10,"sad": -8, "disgust": -5, "angry": -5, "surprise": 2, "neutral": 8.3, "happy": 10}
 
-for emo in final_results:
-  sum += weights[emo]
+    sum = 0
+    max_score = 10*len(final_results)
 
-overall_score = (sum/max_score) * 100
+    for emo in final_results:
+      sum += weights[emo]
 
-print(overall_score)
+    overall_score = (sum/max_score) * 100
+
+    print(overall_score)
