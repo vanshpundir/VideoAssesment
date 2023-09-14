@@ -10,3 +10,5 @@ def getTextFromAudio(path):
         api_name="/predict"
     )
     return result
+
+# print(getTextFromAudio(r"D:\InterviewBot\audio_files\segment_mono.wav"))

@@ -23,5 +23,5 @@ def get_audio(video_path):
     return audio_output_path
 
 if __name__ == "__main__":
-    video_path = '/Users/vansh/Desktop/VideoAssesment/video_files/64df6d6037474b7838448796.mp4'
+    video_path = r'D:\InterviewBot\video_files\64ddd237f6420609ddebb6ce.mp4'
     get_audio(video_path)

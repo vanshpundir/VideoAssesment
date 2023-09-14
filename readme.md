@@ -47,6 +47,7 @@ Before running the code in this repository, make sure you have the following pre
 4. Run the `entrypoint.py` script:
 
    ```bash
+   cd pipeline
    python entrypoint.py
    ```
 

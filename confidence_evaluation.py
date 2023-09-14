@@ -85,4 +85,6 @@ def get_emotion(video_path):
 
     overall_score = (sum/max_score) * 100
 
-    print(overall_score)
+    # print(overall_score)
+
+get_emotion(r'D:\InterviewBot\video_files\64df6ab437474b41bf447f8e.mp4')
